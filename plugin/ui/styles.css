@@ -1,0 +1,385 @@
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern, clean font */
+  background-color: #f4f6f8; /* Light gray background */
+  color: #333; /* Dark gray text */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  transition: all 0.3s ease;
+}
+
+body.dark-theme {
+  background-color: #1e1e1e; /* Dark background */
+  color: #eee; /* Light text */
+}
+
+/* Top Navbar Styles */
+header.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff; /* White navbar */
+  padding: 0.5rem 2rem; /* Reduced vertical padding for thinner navbar */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid #eee; /* Light border */
+}
+
+header.topbar .logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2c3e50; /* Dark blue-gray logo text */
+}
+
+nav {
+  display: flex; /* Arrange links in a row */
+  align-items: center; /* Vertically align items */
+  gap: 1rem; /* Space between links */
+}
+
+nav ul {
+  list-style: none; /* Remove bullet points */
+  padding: 0;
+  margin: 0;
+  display: flex; /* Arrange list items in a row */
+  align-items: center; /* Vertically align items */
+  gap: 1rem; /* Space between list items (links) */
+}
+
+nav .nav-link {
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 0.4rem 0.8rem; /* Adjusted padding for thinner appearance */
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  color: #555; /* Medium gray nav link text */
+  text-decoration: none; /* Remove default link underline */
+}
+
+nav .nav-link:hover {
+  background-color: #ffe082; /* Light yellow on hover */
+  color: #333; /* Dark text on hover */
+}
+
+nav .nav-link.active {
+  background-color: #ffc107; /* Yellow active color */
+  color: #333;
+}
+
+body.dark-theme header.topbar {
+  background-color: #2c3e50; /* Darker navbar */
+  border-bottom-color: #34495e;
+}
+
+body.dark-theme header.topbar .logo {
+  color: #eee;
+}
+
+body.dark-theme nav .nav-link {
+  color: #ccc;
+}
+
+body.dark-theme nav .nav-link:hover {
+  background-color: #4a6572;
+  color: #eee;
+}
+
+body.dark-theme nav .nav-link.active {
+  background-color: #ffc107;
+  color: #333;
+}
+
+/* Main content styles (rest of the CSS remains largely the same) */
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  margin-top: 45px; /* Adjusted margin for thinner navbar */
+}
+
+header.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+header.main-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c3e50; /* Dark blue-gray heading */
+  margin-bottom: 0;
+}
+
+header.main-header .top-icons {
+  display: flex;
+  gap: 1rem;
+}
+
+header.main-header .icon {
+  width: 30px;
+  height: 30px;
+  background-color: #e0f7fa; /* Light teal icon background */
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  /* Add your icon fonts or SVG backgrounds here */
+}
+
+header.main-header .icon.notification-icon {
+  /* Example: background-image: url('notification-icon.svg'); */
+  /* background-size: cover; */
+}
+
+header.main-header .icon.user-icon {
+  /* Example: background-image: url('user-icon.svg'); */
+  /* background-size: cover; */
+}
+
+header.main-header .icon:hover {
+  background-color: #b2ebf2; /* Slightly darker teal on hover */
+}
+
+body.dark-theme header.main-header h1 {
+  color: #eee;
+}
+
+body.dark-theme header.main-header .icon {
+  background-color: #34495e;
+}
+
+body.dark-theme header.main-header .icon:hover {
+  background-color: #4a6572;
+}
+
+/* KPI Section */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid */
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.kpi-card {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  color: #333;
+  border-left: 5px solid #ffc107; /* Yellow accent */
+  transition: transform 0.2s ease-in-out;
+}
+
+.kpi-card:hover {
+  transform: scale(1.02);
+}
+
+.kpi-card h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 0.5rem;
+}
+
+.kpi-card p {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-top: 0.25rem;
+}
+
+body.dark-theme .kpi-grid .kpi-card {
+  background-color: #2c3e50;
+  color: #eee;
+  border-left-color: #ffc107;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-theme .kpi-grid .kpi-card h3 {
+  color: #ccc;
+}
+
+body.dark-theme .kpi-grid .kpi-card p {
+  color: #e0f7fa;
+}
+
+/* Charts Section */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.chart-container {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.chart-container h3 {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 1rem;
+}
+
+.chart-smaller {
+  grid-column: span 1;
+}
+
+body.dark-theme .charts-grid .chart-container {
+  background-color: #2c3e50;
+  color: #eee;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-theme .charts-grid .chart-container h3 {
+  color: #ccc;
+}
+
+/* Gamification Section */
+section#gamification-panel {
+  padding: 2rem;
+}
+
+section.gamification-box {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+section.gamification-box h2 {
+  font-size: 1.5rem;
+  color: #ffc107; /* Yellow heading */
+  margin-bottom: 1rem;
+}
+
+.gamification-stat {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 0.75rem;
+}
+
+.gamification-stat strong {
+  font-weight: 700;
+  color: #2c3e50; /* Dark blue-gray strong text */
+}
+
+.progress-bar-container {
+  margin-top: 1.5rem;
+}
+
+.progress-bar-container label {
+  display: block;
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 0.5rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #f4f6f8; /* Light gray progress bar background */
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress {
+  background-color: #ffc107; /* Yellow progress color */
+  height: 100%;
+  border-radius: 4px;
+}
+
+body.dark-theme section.gamification-panel {
+  background-color: #1e1e1e; /* Ensure full background in dark mode */
+}
+
+body.dark-theme section.gamification-box {
+  background-color: #2c3e50;
+  color: #eee;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-theme section.gamification-box h2 {
+  color: #ffc107;
+}
+
+body.dark-theme .gamification-stat {
+  color: #ccc;
+}
+
+body.dark-theme .gamification-stat strong {
+  color: #e0f7fa;
+}
+
+body.dark-theme .progress-bar-container label {
+  color: #ccc;
+}
+
+body.dark-theme .progress-bar {
+  background-color: #34495e;
+}
+
+body.dark-theme .progress {
+  background-color: #ffc107;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .kpi-grid {
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+
+  .charts-grid {
+      grid-template-columns: 1fr;
+  }
+
+  .chart-smaller {
+      grid-column: span 1;
+  }
+
+  nav ul {
+      flex-direction: column; /* Stack links on smaller screens */
+      align-items: flex-start;
+      gap: 0.5rem;
+  }
+
+  nav {
+      gap: 1rem;
+  }
+
+  nav .nav-link {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.9rem;
+  }
+
+  header.main-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+  }
+
+  header.main-header .top-icons {
+      margin-top: 1rem;
+  }
+}

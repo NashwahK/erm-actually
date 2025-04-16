@@ -20,4 +20,18 @@ document.getElementById("check-claims-btn").addEventListener("click", async () =
       }
     });
   });
+  document.addEventListener("DOMContentLoaded", function () {
+    const dashboardBtn = document.getElementById("go-to-dashboard-btn");
+    
+    dashboardBtn.addEventListener("click", function () {
+      window.location.href = 'dashboard.html';
+    });
+  });
+  document.getElementById("go-to-dashboard-btn").addEventListener("click", () => {
+    const dashboardPath = chrome.runtime.getURL("ui/dashboard.html");
+    window.open(dashboardPath, "_blank");
+  });
+  
+  
+  
     

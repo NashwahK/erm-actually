@@ -5,15 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Erm... Actually! - Fact Checker</title>
   <link rel="stylesheet" href="popup.css">
+  <style>
+    /* Reset all default styles to make it as small as possible */
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;  /* Prevent scrolling */
+      width: auto;       /* Adjust width based on content */
+      height: auto;      /* Adjust height based on content */
+    }
+
+    /* Your actual element style */
+    .popup-content {
+      width: 150px;  /* Width of your content */
+      height: 50px;  /* Height of your content */
+      background-color: #fff;
+      text-align: center;
+      font-family: Arial, sans-serif;
+    }
+  </style>
 </head>
+
 <body>
   <div class="container">
     <h1>Erm... Actually!</h1>
     <div id="fact-check-stats">
-      <p>Total Claims Checked: <span id="claims-count">0</span></p>
-      <p>Inaccuracies Found: <span id="inaccuracies-count">0</span></p>
+      <p>Total Claims Checked: <span id="claims-count">221</span></p>
+      <p>Inaccuracies Found: <span id="inaccuracies-count">124</span></p>
     </div>
     <button id="check-claims-btn">Check Claims on This Page</button>
+    <button id="go-to-dashboard-btn">Go to Dashboard</button>
   </div>
   <script src="popup.js"></script>
 </body>

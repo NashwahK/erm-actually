@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Erm... Actually | Dashboard</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="chart.umd.js"></script>
+    <script src="dashboard.js" defer></script>
+</head>
+<body class="light-theme">
+    <header class="topbar">
+        <div class="logo">Erm... Actually</div>
+        <nav>
+            <ul>
+                <li class="nav-link active" data-tab="dashboard">Dashboard</li>
+                <li class="nav-link" data-tab="gamification">Gamification</li>
+                <li class="nav-link">Settings</li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <header class="main-header">
+            <h1 id="main-heading">Dashboard</h1>
+            <div class="top-icons">
+                <div class="icon notification-icon" title="Notifications"></div>
+                <div class="icon user-icon" title="User Profile"></div>
+            </div>
+        </header>
+
+        <section id="dashboard-panel">
+            <section class="kpi-grid">
+                <div class="kpi-card">
+                    <h3>Inaccuracies Detected</h3>
+                    <p>124 this month</p>
+                </div>
+                <div class="kpi-card">
+                    <h3>Extension Accuracy</h3>
+                    <p>89.3%</p>
+                </div>
+                <div class="kpi-card">
+                    <h3>Most Inaccurate Site</h3>
+                    <p>example-news.com</p>
+                </div>
+            </section>
+
+            <section class="charts-grid">
+                <div class="chart-container">
+                    <h3>Monthly Inaccuracies</h3>
+                    <canvas id="inaccuracyChart"></canvas>
+                </div>
+                <div class="chart-container chart-smaller">
+                    <h3>Inaccuracy by Website</h3>
+                    <canvas id="sourceChart" width="100" height="100"></canvas>
+                </div>
+            </section>
+        </section>
+
+        <section id="gamification-panel" style="display: none;">
+            <div class="gamification-box">
+                <h2>Your Impact</h2>
+                <p class="gamification-stat">Score: <strong>860</strong></p>
+                <p class="gamification-stat">Claims Checked: <strong>221</strong></p>
+                <p class="gamification-stat">Highest Accuracy Streak: <strong>15 days</strong></p>
+                <div class="progress-bar-container">
+                    <label>Progress to Next Badge</label>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 68%"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
