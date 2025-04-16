@@ -1,0 +1,28 @@
+{
+    "name": "Erm... Actually!",
+    "description": "The coolest fact-checker ever",
+    "version": "1.0",
+    "manifest_version": 3,
+    "permissions": ["scripting", "activeTab", "storage"],
+    "host_permissions": ["<all_urls>"],
+  
+    "action": {
+      "default_popup": "popup/popup.html",
+      "icon": "assets/icon.png"
+      
+    },
+  
+    "background": {
+      "service_worker": "background.js",
+      "type": "module"
+    },
+  
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["content.js"],
+        "type": "module"
+      }
+    ]
+  }
+  

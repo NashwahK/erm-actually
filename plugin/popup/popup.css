@@ -1,0 +1,35 @@
+/* popup.css */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f7fafc;
+    padding: 10px;
+    margin: 0;
+  }
+  
+  #app {
+    text-align: center;
+  }
+  
+  h1 {
+    font-size: 1.5rem;
+    color: #333;
+  }
+  
+  #check-claims-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  #check-claims-btn:hover {
+    background-color: #45a049;
+  }
+  
+  #results {
+    margin-top: 20px;
+    color: #555;
+  }
+  
