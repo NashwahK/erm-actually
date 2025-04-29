@@ -18,7 +18,7 @@ style.textContent = `
   }
 
   .fact-highlight {
-    background-color: #fca5a5;
+    background-color:rgb(252, 245, 165);
     border-radius: 4px;
     padding: 2px 4px;
     cursor: pointer;

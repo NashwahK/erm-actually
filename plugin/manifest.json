@@ -19,7 +19,7 @@
 
   "action": {
     "default_popup": "popup/popup.html",
-    "icon": "assets/icon.png"
+    "icon": "D:/Hack Tuah!/plugin/assets/icon.png"
   },
 
   "background": {

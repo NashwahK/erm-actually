@@ -383,3 +383,15 @@ body.dark-theme .progress {
       margin-top: 1rem;
   }
 }
+.logo {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.logo-img {
+  height: 32px;
+  width: 32px;
+  margin-right: 0.5rem;
+}
