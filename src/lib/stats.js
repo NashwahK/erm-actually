@@ -1,4 +1,5 @@
-// Pure functions over the persisted usage statistics. Storage lives in statsStore.js.
+// Recording usage statistics: pure functions over the persisted stats object.
+// Storage lives in storage.js; everything the dashboard derives lives in dashboardModel.js.
 
 export const EMPTY_STATS = Object.freeze({
   totalChecked: 0,
@@ -6,23 +7,24 @@ export const EMPTY_STATS = Object.freeze({
   pagesScanned: 0,
   bySite: {}, // hostname → { checked, flagged }
   byMonth: {}, // 'YYYY-MM' → { checked, flagged }
+  byDay: {}, // 'YYYY-MM-DD' → { checked, flagged, pages }
   scanDays: [], // sorted unique 'YYYY-MM-DD'
+  byPublisher: {}, // fact-checker name → number of flagged claims they reviewed
+  byRating: {}, // rating bucket → number of flagged claims
+  recentScans: [], // newest first: { url, site, title, date, checked, flagged }
+  recentClaims: [], // newest first: { sentence, publisher, rating, bucket, reviewUrl, pageUrl, pageTitle, date }
 });
 
-export const BADGES = [
-  { name: 'Curious', score: 0 },
-  { name: 'Skeptic', score: 50 },
-  { name: 'Stickler', score: 250 },
-  { name: 'Pedant', score: 1000 },
-  { name: 'Professor Actually', score: 5000 },
-];
+const MAX_DAYS = 400;
+export const MAX_RECENT_SCANS = 50;
+export const MAX_RECENT_CLAIMS = 100;
+const MAX_TEXT = 300;
 
-const MAX_SCAN_DAYS = 400;
 const pad = (n) => String(n).padStart(2, '0');
 export const monthKey = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}`;
 export const dayKey = (date) => `${monthKey(date)}-${pad(date.getDate())}`;
 
-function hostnameOf(url) {
+export function hostnameOf(url) {
   try {
     return new URL(url).hostname || 'local file';
   } catch {
@@ -30,94 +32,95 @@ function hostnameOf(url) {
   }
 }
 
+/** Groups a fact-checker's free-text rating ("Pants on Fire!", "Mostly False") into a few buckets. */
+export function ratingBucket(rating) {
+  const r = (rating ?? '').toLowerCase().trim();
+  if (!r) return 'Unrated';
+  if (/mostly false|largely false|mostly inaccurate/.test(r)) return 'Mostly false';
+  if (/mostly true|largely true|mostly accurate/.test(r)) return 'Mostly true';
+  if (
+    /mislead|mixed|mixture|half|partly|partially|missing context|out of context|exaggerat|unproven|lacks context/.test(
+      r,
+    )
+  )
+    return 'Misleading';
+  if (
+    /pants on fire|false|incorrect|fake|wrong|inaccurate|baseless|not true|unsupported|fabricat|hoax|debunk/.test(
+      r,
+    )
+  )
+    return 'False';
+  if (/true|correct|accurate/.test(r)) return 'True';
+  return 'Other';
+}
+
 const add = (bucket = { checked: 0, flagged: 0 }, checked, flagged) => ({
+  ...bucket,
   checked: bucket.checked + checked,
   flagged: bucket.flagged + flagged,
 });
 
-/** Returns new stats with one page scan added. Never mutates its input. */
-export function recordScan(stats, { url, checked, flagged, date = new Date() }) {
+const countEach = (counts, keys) =>
+  keys.reduce((acc, key) => ({ ...acc, [key]: (acc[key] ?? 0) + 1 }), counts);
+
+const clip = (text) => (text.length > MAX_TEXT ? `${text.slice(0, MAX_TEXT - 1)}…` : text);
+
+function trimDays(byDay) {
+  const keys = Object.keys(byDay).sort();
+  return keys.length <= MAX_DAYS
+    ? byDay
+    : Object.fromEntries(keys.slice(-MAX_DAYS).map((k) => [k, byDay[k]]));
+}
+
+/**
+ * Returns new stats with one page scan added. Never mutates its input.
+ * `flaggedClaims` items: { sentence, publishers: string[], publisher, rating, reviewUrl }.
+ */
+export function recordScan(
+  stats,
+  { url, title = '', checked, flagged, flaggedClaims = [], date = new Date() },
+) {
   const s = { ...EMPTY_STATS, ...stats };
   const site = hostnameOf(url);
-  const month = monthKey(date);
   const day = dayKey(date);
+  const iso = date.toISOString();
+  const today = s.byDay[day] ?? { checked: 0, flagged: 0, pages: 0 };
+
+  const claims = flaggedClaims.map((c) => ({
+    sentence: clip(c.sentence),
+    publisher: c.publisher ?? null,
+    rating: c.rating ?? null,
+    bucket: ratingBucket(c.rating),
+    reviewUrl: c.reviewUrl ?? null,
+    pageUrl: url,
+    pageTitle: clip(title || site),
+    date: iso,
+  }));
+
   return {
+    ...s,
     totalChecked: s.totalChecked + checked,
     totalFlagged: s.totalFlagged + flagged,
     pagesScanned: s.pagesScanned + 1,
     bySite: { ...s.bySite, [site]: add(s.bySite[site], checked, flagged) },
-    byMonth: { ...s.byMonth, [month]: add(s.byMonth[month], checked, flagged) },
-    scanDays: [...new Set([...s.scanDays, day])].sort().slice(-MAX_SCAN_DAYS),
-  };
-}
-
-export const scoreOf = (stats) => stats.totalChecked + 5 * stats.totalFlagged;
-
-/** Longest run of consecutive calendar days with at least one scan. */
-export function longestStreak(scanDays) {
-  let best = 0;
-  let run = 0;
-  let previous = null;
-  for (const day of scanDays) {
-    const current = Date.parse(`${day}T00:00:00Z`);
-    run = previous !== null && current - previous === 86_400_000 ? run + 1 : 1;
-    best = Math.max(best, run);
-    previous = current;
-  }
-  return best;
-}
-
-export function badgeProgress(score) {
-  const index = BADGES.findLastIndex((badge) => score >= badge.score);
-  const current = BADGES[index];
-  const next = BADGES[index + 1] ?? null;
-  const progress = next ? (score - current.score) / (next.score - current.score) : 1;
-  return { current, next, progress };
-}
-
-const flaggedIn = (stats, date) => stats.byMonth[monthKey(date)]?.flagged ?? 0;
-
-/** Labels and flagged counts for the last `months` calendar months, oldest first. */
-export function monthlySeries(stats, now, months) {
-  const dates = Array.from(
-    { length: months },
-    (_, i) => new Date(now.getFullYear(), now.getMonth() - (months - 1 - i), 1),
-  );
-  return {
-    monthLabels: dates.map((d) => d.toLocaleString('en', { month: 'short' })),
-    monthlyFlagged: dates.map((d) => flaggedIn(stats, d)),
-  };
-}
-
-/** The sites with the most flagged claims, most first. */
-export function topSites(stats, limit = 5) {
-  const sites = Object.entries(stats.bySite)
-    .filter(([, v]) => v.flagged > 0)
-    .sort((a, b) => b[1].flagged - a[1].flagged)
-    .slice(0, limit);
-  return {
-    siteLabels: sites.map(([site]) => site),
-    siteFlagged: sites.map(([, v]) => v.flagged),
-  };
-}
-
-/** Everything the dashboard renders, derived from stats. */
-export function buildDashboardModel(stats, now = new Date(), months = 6) {
-  const s = { ...EMPTY_STATS, ...stats };
-  const sites = topSites(s);
-  const score = scoreOf(s);
-  return {
-    isEmpty: s.pagesScanned === 0,
-    flaggedThisMonth: flaggedIn(s, now),
-    flagRate: s.totalChecked ? s.totalFlagged / s.totalChecked : 0,
-    topSite: sites.siteLabels[0] ?? null,
-    pagesScanned: s.pagesScanned,
-    totalChecked: s.totalChecked,
-    totalFlagged: s.totalFlagged,
-    ...monthlySeries(s, now, months),
-    ...sites,
-    score,
-    longestStreak: longestStreak(s.scanDays),
-    ...badgeProgress(score),
+    byMonth: { ...s.byMonth, [monthKey(date)]: add(s.byMonth[monthKey(date)], checked, flagged) },
+    byDay: trimDays({
+      ...s.byDay,
+      [day]: { ...add(today, checked, flagged), pages: today.pages + 1 },
+    }),
+    scanDays: [...new Set([...s.scanDays, day])].sort().slice(-MAX_DAYS),
+    byPublisher: countEach(
+      s.byPublisher,
+      flaggedClaims.flatMap((c) => [...new Set(c.publishers ?? [c.publisher].filter(Boolean))]),
+    ),
+    byRating: countEach(
+      s.byRating,
+      claims.map((c) => c.bucket),
+    ),
+    recentScans: [
+      { url, site, title: clip(title || site), date: iso, checked, flagged },
+      ...s.recentScans,
+    ].slice(0, MAX_RECENT_SCANS),
+    recentClaims: [...claims, ...s.recentClaims].slice(0, MAX_RECENT_CLAIMS),
   };
 }

@@ -8,8 +8,15 @@ if (!globalThis.__ermActuallyLoaded) {
 
   const scanner = createScanner({
     doc: document,
-    checkSentences: async (sentences, pageUrl) =>
-      unwrap(await chrome.runtime.sendMessage({ type: MSG.CHECK_SENTENCES, sentences, pageUrl })),
+    checkSentences: async (sentences, page) =>
+      unwrap(
+        await chrome.runtime.sendMessage({
+          type: MSG.CHECK_SENTENCES,
+          sentences,
+          pageUrl: page.url,
+          pageTitle: page.title,
+        }),
+      ),
   });
 
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {

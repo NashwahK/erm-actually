@@ -41,7 +41,7 @@ export function createScanner({ doc, checkSentences }) {
     const unique = [...new Set(blocks.flatMap((b) => b.sentences))];
     if (!unique.length) return { checked: 0, flagged: 0, failed: 0 };
 
-    const results = await checkSentences(unique, doc.location.href);
+    const results = await checkSentences(unique, { url: doc.location.href, title: doc.title });
     const flaggedClaims = new Map(
       results.filter((r) => r.claims.length > 0).map((r) => [r.sentence, r.claims]),
     );

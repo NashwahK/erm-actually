@@ -25,16 +25,35 @@ async function getChecker() {
   return checker;
 }
 
-async function checkSentences(sentences, pageUrl) {
+/** One record per flagged sentence: its first review plus every publisher that reviewed it. */
+function summariseFlagged(results) {
+  return results
+    .filter((r) => r.claims.length > 0)
+    .map(({ sentence, claims }) => {
+      const reviews = claims.flatMap((c) => c.reviews);
+      return {
+        sentence,
+        publishers: [...new Set(reviews.map((r) => r.publisher))],
+        publisher: reviews[0]?.publisher ?? null,
+        rating: reviews[0]?.rating ?? null,
+        reviewUrl: reviews[0]?.url ?? null,
+      };
+    });
+}
+
+async function checkSentences(sentences, pageUrl, pageTitle) {
   const results = await (await getChecker()).checkAll(sentences);
   const failures = results.filter((r) => r.error);
   // If every request failed it's a configuration problem (bad key, offline) — surface it.
   if (results.length && failures.length === results.length) throw failures[0].error;
 
+  const flaggedClaims = summariseFlagged(results);
   await stats.record({
     url: pageUrl,
+    title: pageTitle,
     checked: results.length - failures.length,
-    flagged: results.filter((r) => r.claims.length > 0).length,
+    flagged: flaggedClaims.length,
+    flaggedClaims,
   });
   return results.map(({ sentence, claims, error }) => ({
     sentence,
@@ -52,7 +71,8 @@ async function scanTab(tabId) {
 
 const handlers = {
   [MSG.SCAN_TAB]: (message) => scanTab(message.tabId),
-  [MSG.CHECK_SENTENCES]: (message) => checkSentences(message.sentences, message.pageUrl),
+  [MSG.CHECK_SENTENCES]: (message) =>
+    checkSentences(message.sentences, message.pageUrl, message.pageTitle),
 };
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {

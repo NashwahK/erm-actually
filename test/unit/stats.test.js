@@ -1,17 +1,19 @@
 import { describe, expect, it } from 'vitest';
-import {
-  badgeProgress,
-  buildDashboardModel,
-  EMPTY_STATS,
-  longestStreak,
-  recordScan,
-} from '../../src/lib/stats.js';
+import { EMPTY_STATS, MAX_RECENT_SCANS, ratingBucket, recordScan } from '../../src/lib/stats.js';
 import { createStatsStore } from '../../src/lib/storage.js';
 
 const day = (iso) => new Date(`${iso}T12:00:00`);
 
+const claim = (sentence, publisher, rating) => ({
+  sentence,
+  publisher,
+  publishers: [publisher],
+  rating,
+  reviewUrl: `https://check.test/${encodeURIComponent(sentence)}`,
+});
+
 describe('recordScan', () => {
-  it('accumulates totals per site and per month without mutating input', () => {
+  it('accumulates totals per site, month and day without mutating input', () => {
     const first = recordScan(EMPTY_STATS, {
       url: 'https://news.example/a',
       checked: 10,
@@ -22,66 +24,65 @@ describe('recordScan', () => {
       url: 'https://news.example/b',
       checked: 5,
       flagged: 1,
-      date: day('2026-11-02'),
+      date: day('2026-11-01'),
     });
 
     expect(EMPTY_STATS.totalChecked).toBe(0);
     expect(second).toMatchObject({ totalChecked: 15, totalFlagged: 3, pagesScanned: 2 });
     expect(second.bySite['news.example']).toEqual({ checked: 15, flagged: 3 });
     expect(second.byMonth['2026-11']).toEqual({ checked: 15, flagged: 3 });
-    expect(second.scanDays).toEqual(['2026-11-01', '2026-11-02']);
-  });
-});
-
-describe('longestStreak', () => {
-  it('counts consecutive days', () => {
-    expect(longestStreak([])).toBe(0);
-    expect(longestStreak(['2026-01-01', '2026-01-02', '2026-01-03', '2026-01-05'])).toBe(3);
-  });
-});
-
-describe('badgeProgress', () => {
-  it('reports the current and next badge', () => {
-    const { current, next, progress } = badgeProgress(150);
-    expect(current.name).toBe('Skeptic');
-    expect(next.name).toBe('Stickler');
-    expect(progress).toBeCloseTo(0.5);
+    expect(second.byDay['2026-11-01']).toEqual({ checked: 15, flagged: 3, pages: 2 });
+    expect(second.scanDays).toEqual(['2026-11-01']);
   });
 
-  it('caps at the top badge', () => {
-    expect(badgeProgress(1e9)).toMatchObject({ next: null, progress: 1 });
-  });
-});
+  it('keeps recent scans and flagged claims newest first, with publishers and ratings counted', () => {
+    const stats = recordScan(EMPTY_STATS, {
+      url: 'https://news.example/a',
+      title: 'Moon story',
+      checked: 3,
+      flagged: 2,
+      flaggedClaims: [
+        claim('The moon landing was faked.', 'Snopes', 'False'),
+        claim('Carrots give you night vision.', 'Snopes', 'Mostly False'),
+      ],
+      date: day('2026-11-02'),
+    });
 
-describe('buildDashboardModel', () => {
-  it('derives KPIs and chart series from real stats (no hardcoded numbers)', () => {
+    expect(stats.recentScans[0]).toMatchObject({
+      title: 'Moon story',
+      site: 'news.example',
+      flagged: 2,
+    });
+    expect(stats.recentClaims.map((c) => c.bucket)).toEqual(['False', 'Mostly false']);
+    expect(stats.recentClaims[0]).toMatchObject({ pageTitle: 'Moon story', publisher: 'Snopes' });
+    expect(stats.byPublisher).toEqual({ Snopes: 2 });
+    expect(stats.byRating).toEqual({ False: 1, 'Mostly false': 1 });
+  });
+
+  it('caps the history so storage cannot grow without limit', () => {
     let stats = EMPTY_STATS;
-    stats = recordScan(stats, {
-      url: 'https://a.test',
-      checked: 8,
-      flagged: 4,
-      date: day('2026-10-10'),
-    });
-    stats = recordScan(stats, {
-      url: 'https://b.test',
-      checked: 12,
-      flagged: 1,
-      date: day('2026-11-20'),
-    });
-
-    const model = buildDashboardModel(stats, day('2026-11-26'));
-
-    expect(model.isEmpty).toBe(false);
-    expect(model.flaggedThisMonth).toBe(1);
-    expect(model.flagRate).toBeCloseTo(5 / 20);
-    expect(model.topSite).toBe('a.test');
-    expect(model.monthLabels).toEqual(['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov']);
-    expect(model.monthlyFlagged).toEqual([0, 0, 0, 0, 4, 1]);
-    expect(model.siteLabels).toEqual(['a.test', 'b.test']);
+    for (let i = 0; i < MAX_RECENT_SCANS + 10; i++) {
+      stats = recordScan(stats, { url: `https://x.test/${i}`, checked: 1, flagged: 0 });
+    }
+    expect(stats.recentScans).toHaveLength(MAX_RECENT_SCANS);
+    expect(stats.recentScans[0].url).toBe(`https://x.test/${MAX_RECENT_SCANS + 9}`);
   });
+});
 
-  it('flags an empty state', () => {
-    expect(buildDashboardModel(EMPTY_STATS).isEmpty).toBe(true);
+describe('ratingBucket', () => {
+  it.each([
+    ['False', 'False'],
+    ['Pants on Fire!', 'False'],
+    ['Incorrect', 'False'],
+    ['Mostly False', 'Mostly false'],
+    ['Half True', 'Misleading'],
+    ['Missing context', 'Misleading'],
+    ['Mostly True', 'Mostly true'],
+    ['Correct', 'True'],
+    ['Satire', 'Other'],
+    [null, 'Unrated'],
+  ])('%s → %s', (rating, bucket) => {
+    expect(ratingBucket(rating)).toBe(bucket);
   });
 });
 

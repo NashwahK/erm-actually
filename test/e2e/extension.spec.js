@@ -29,7 +29,7 @@ test.beforeAll(async () => {
 test.afterAll(async () => context?.close());
 
 const screenshot = (page, name) =>
-  shots && page.screenshot({ path: path.join(shots, `${name}.png`) });
+  shots && page.screenshot({ path: path.join(shots, `${name}.png`), fullPage: true });
 
 async function openArticle(file) {
   const page = await context.newPage();
@@ -137,11 +137,60 @@ test('popup and dashboard show the real recorded statistics', async () => {
   await expect(dashboard.locator('#kpi-top-site')).toHaveText('127.0.0.1');
   await expect(dashboard.locator('#kpi-flagged-month')).toHaveText('13');
   await dashboard.waitForTimeout(800); // let chart animations finish for the screenshot
-  await screenshot(dashboard, '05-dashboard');
+  await screenshot(dashboard, '05-overview');
 
-  await dashboard.getByRole('button', { name: 'Achievements' }).click();
-  await expect(dashboard.getByRole('heading', { level: 1 })).toHaveText('Achievements');
+  await expect(dashboard.locator('#kpi-checked')).not.toHaveText('0');
+  await expect(dashboard.locator('#kpi-streak')).toHaveText('1 day');
+  await expect(dashboard.locator('#fun-fact-title')).toHaveText('Fun fact of the day');
+  await expect(dashboard.locator('#fun-fact-text')).not.toBeEmpty();
+  await expect(dashboard.locator('[data-panel]:visible')).toHaveCount(1);
+
+  const openTab = async (name, heading) => {
+    await dashboard.getByRole('tab', { name }).click();
+    await expect(dashboard.getByRole('heading', { level: 1 })).toHaveText(heading);
+    await expect(dashboard.getByRole('tab', { name })).toHaveAttribute('aria-selected', 'true');
+    // Exactly one panel is visible: the tab's own.
+    await expect(dashboard.locator('[data-panel]:visible')).toHaveCount(1);
+    await expect(dashboard.getByRole('tabpanel', { name })).toBeVisible();
+  };
+
+  // History: newest scan first, with the page title.
+  await openTab('History', 'History');
+  const rows = dashboard.locator('#history-rows tr');
+  await expect(rows).toHaveCount(3);
+  await expect(rows.first()).toContainText('The Rise of AI in Global Politics');
+  await screenshot(dashboard, '06-history');
+
+  // Flagged claims: every flagged sentence with its verdict, searchable.
+  await openTab('Flagged claims', 'Flagged claims');
+  await expect(dashboard.locator('#claim-list > li')).toHaveCount(13);
+  await expect(dashboard.locator('#claim-list')).toContainText('Checked by FactCheck.org');
+  await dashboard.locator('#claim-search').fill('moon');
+  await expect(dashboard.locator('#claim-list > li')).toHaveCount(3);
+  await expect(dashboard.locator('#claim-count')).toHaveText('Showing 3 of 13 claims');
+  await dashboard.locator('#claim-search').fill('');
+  await screenshot(dashboard, '07-claims');
+
+  // Sources: fact-checkers, ratings and websites.
+  await openTab('Sources', 'Sources');
+  await expect(dashboard.locator('#publisher-list')).toContainText('Reuters Fact Check');
+  await expect(dashboard.locator('#site-rows tr')).toHaveCount(1);
+  await dashboard.waitForTimeout(600);
+  await screenshot(dashboard, '08-sources');
+
+  // Achievements: badges and milestones.
+  await openTab('Achievements', 'Achievements');
   await expect(dashboard.locator('#badge')).not.toHaveText('—');
-  await screenshot(dashboard, '06-achievements');
+  await expect(dashboard.locator('#milestone-list li.done')).not.toHaveCount(0);
+  await expect(dashboard.locator('#badge-grid li')).toHaveCount(5);
+  await screenshot(dashboard, '09-achievements');
+
+  // The tab survives a reload (kept in the URL hash), and the fun fact can be cycled.
+  await dashboard.reload();
+  await expect(dashboard.getByRole('heading', { level: 1 })).toHaveText('Achievements');
+  const firstFact = await dashboard.locator('#fun-fact-text').textContent();
+  await dashboard.getByRole('button', { name: 'Show another fact' }).click();
+  await expect(dashboard.locator('#fun-fact-text')).not.toHaveText(firstFact);
+  await expect(dashboard.locator('#fun-fact-title')).toHaveText('Another fun fact');
   await dashboard.close();
 });

@@ -14,6 +14,14 @@
   --text-inverse: #f8fafc;
   --border: #e5e7eb;
   --danger: #b91c1c;
+  --success: #15803d;
+  --rating-false: #dc2626;
+  --rating-mostly-false: #ea580c;
+  --rating-misleading: #d97706;
+  --rating-mostly-true: #65a30d;
+  --rating-true: #16a34a;
+  --rating-other: #64748b;
+  --rating-unrated: #94a3b8;
   --radius: 8px;
   --shadow: 0 2px 4px rgb(0 0 0 / 6%);
   --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -29,6 +37,14 @@
     --text-inverse: #111827;
     --border: #374151;
     --danger: #fca5a5;
+    --success: #86efac;
+    --rating-false: #f87171;
+    --rating-mostly-false: #fb923c;
+    --rating-misleading: #fbbf24;
+    --rating-mostly-true: #a3e635;
+    --rating-true: #4ade80;
+    --rating-other: #94a3b8;
+    --rating-unrated: #64748b;
     --shadow: 0 2px 4px rgb(0 0 0 / 30%);
   }
 }
@@ -99,4 +115,18 @@ body {
 :focus-visible {
   outline: 2px solid var(--secondary);
   outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Author display rules (e.g. `display: grid` on sections) must not override the hidden attribute. */
+[hidden] {
+  display: none !important;
 }

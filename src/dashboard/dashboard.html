@@ -14,26 +14,79 @@
         <img src="../assets/icon-48.png" alt="" class="logo-img" />
         <span>Erm... Actually!</span>
       </div>
-      <nav aria-label="Dashboard sections">
-        <button class="nav-link active" type="button" data-tab="dashboard" aria-pressed="true">
-          Dashboard
+      <nav class="tabs" role="tablist" aria-label="Dashboard sections">
+        <button
+          class="tab"
+          type="button"
+          role="tab"
+          id="tab-overview"
+          data-tab="overview"
+          aria-controls="panel-overview"
+        >
+          Overview
         </button>
-        <button class="nav-link" type="button" data-tab="achievements" aria-pressed="false">
+        <button
+          class="tab"
+          type="button"
+          role="tab"
+          id="tab-history"
+          data-tab="history"
+          aria-controls="panel-history"
+        >
+          History
+        </button>
+        <button
+          class="tab"
+          type="button"
+          role="tab"
+          id="tab-claims"
+          data-tab="claims"
+          aria-controls="panel-claims"
+        >
+          Flagged claims
+        </button>
+        <button
+          class="tab"
+          type="button"
+          role="tab"
+          id="tab-sources"
+          data-tab="sources"
+          aria-controls="panel-sources"
+        >
+          Sources
+        </button>
+        <button
+          class="tab"
+          type="button"
+          role="tab"
+          id="tab-achievements"
+          data-tab="achievements"
+          aria-controls="panel-achievements"
+        >
           Achievements
         </button>
-        <button class="nav-link" type="button" id="settings-link">Settings</button>
       </nav>
+      <button class="settings-link" type="button" id="settings-link">Settings</button>
     </header>
 
     <main class="main-content">
-      <h1 id="main-heading">Dashboard</h1>
+      <div class="page-head">
+        <h1 id="main-heading">Overview</h1>
+        <p class="subtitle" id="subtitle"></p>
+      </div>
 
       <p id="empty-state" class="card empty-state" hidden>
         No pages checked yet. Open an article, click the Erm... Actually! toolbar button and choose
-        “Check claims on this page”.
+        “Check claims on this page”. Your statistics will appear here.
       </p>
 
-      <section id="dashboard-panel" data-panel="dashboard">
+      <!-- Overview -->
+      <section
+        id="panel-overview"
+        role="tabpanel"
+        aria-labelledby="tab-overview"
+        data-panel="overview"
+      >
         <div class="kpi-grid">
           <div class="card kpi-card">
             <h3>Claims flagged this month</h3>
@@ -44,41 +97,223 @@
             <p id="kpi-flag-rate">0%</p>
           </div>
           <div class="card kpi-card">
-            <h3>Most-flagged site</h3>
-            <p id="kpi-top-site">—</p>
-          </div>
-          <div class="card kpi-card">
             <h3>Pages checked</h3>
             <p id="kpi-pages">0</p>
+          </div>
+          <div class="card kpi-card">
+            <h3>Sentences checked</h3>
+            <p id="kpi-checked">0</p>
+          </div>
+          <div class="card kpi-card">
+            <h3>Checked today</h3>
+            <p id="kpi-today">0</p>
+            <span class="kpi-note" id="kpi-today-note"></span>
+          </div>
+          <div class="card kpi-card">
+            <h3>Current streak</h3>
+            <p id="kpi-streak">0 days</p>
+            <span class="kpi-note" id="kpi-streak-note"></span>
+          </div>
+          <div class="card kpi-card">
+            <h3>Sentences per page</h3>
+            <p id="kpi-avg">0</p>
+          </div>
+          <div class="card kpi-card">
+            <h3>Most-flagged site</h3>
+            <p id="kpi-top-site" class="kpi-text">—</p>
+          </div>
+        </div>
+
+        <div class="card chart-container wide">
+          <h3>Last 14 days</h3>
+          <div class="chart-box tall">
+            <canvas
+              id="daily-chart"
+              role="img"
+              aria-label="Sentences checked and claims flagged per day, last 14 days"
+            ></canvas>
           </div>
         </div>
 
         <div class="charts-grid">
           <div class="card chart-container">
             <h3>Claims flagged per month</h3>
-            <canvas id="monthly-chart" role="img" aria-label="Claims flagged per month"></canvas>
+            <div class="chart-box">
+              <canvas id="monthly-chart" role="img" aria-label="Claims flagged per month"></canvas>
+            </div>
           </div>
           <div class="card chart-container">
             <h3>Claims flagged by website</h3>
-            <canvas id="site-chart" role="img" aria-label="Claims flagged by website"></canvas>
+            <div class="chart-box">
+              <canvas id="site-chart" role="img" aria-label="Claims flagged by website"></canvas>
+            </div>
             <p id="site-chart-empty" class="muted" hidden>No flagged claims yet.</p>
           </div>
         </div>
       </section>
 
-      <section id="achievements-panel" data-panel="achievements" hidden>
-        <div class="card achievements-box">
-          <h2>Your impact</h2>
-          <p class="stat">Score: <strong id="score">0</strong></p>
-          <p class="stat">Claims checked: <strong id="claims-checked">0</strong></p>
-          <p class="stat">Longest daily streak: <strong id="streak">0 days</strong></p>
-          <p class="stat">Current badge: <strong id="badge">—</strong></p>
-          <div class="progress-block">
-            <label id="progress-label" for="badge-progress">Progress to next badge</label>
-            <progress id="badge-progress" max="1" value="0"></progress>
+      <!-- History -->
+      <section
+        id="panel-history"
+        role="tabpanel"
+        aria-labelledby="tab-history"
+        data-panel="history"
+        hidden
+      >
+        <div class="card table-card">
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Page</th>
+                  <th>Website</th>
+                  <th>When</th>
+                  <th class="num">Checked</th>
+                  <th class="num">Flagged</th>
+                </tr>
+              </thead>
+              <tbody id="history-rows"></tbody>
+            </table>
+          </div>
+          <p id="history-empty" class="muted empty-row" hidden>
+            Pages you check will be listed here.
+          </p>
+        </div>
+        <p class="footnote">Shows your 50 most recent checks.</p>
+      </section>
+
+      <!-- Flagged claims -->
+      <section
+        id="panel-claims"
+        role="tabpanel"
+        aria-labelledby="tab-claims"
+        data-panel="claims"
+        hidden
+      >
+        <div class="filters">
+          <label class="filter">
+            <span>Search</span>
+            <input
+              id="claim-search"
+              type="search"
+              placeholder="Words in the claim, page or fact-checker"
+              autocomplete="off"
+            />
+          </label>
+          <label class="filter">
+            <span>Rating</span>
+            <select id="claim-rating">
+              <option value="">All ratings</option>
+            </select>
+          </label>
+          <span class="filter-count" id="claim-count"></span>
+        </div>
+        <ol id="claim-list" class="claim-list"></ol>
+        <p id="claims-empty" class="card muted empty-row" hidden>
+          Claims you flag will be listed here with their fact-checks.
+        </p>
+      </section>
+
+      <!-- Sources -->
+      <section
+        id="panel-sources"
+        role="tabpanel"
+        aria-labelledby="tab-sources"
+        data-panel="sources"
+        hidden
+      >
+        <div class="charts-grid">
+          <div class="card chart-container">
+            <h3>How fact-checkers rated your flagged claims</h3>
+            <div class="chart-box">
+              <canvas id="rating-chart" role="img" aria-label="Flagged claims by rating"></canvas>
+            </div>
+            <p id="rating-empty" class="muted" hidden>No ratings yet.</p>
+          </div>
+          <div class="card chart-container">
+            <h3>Fact-checkers you’ve seen most</h3>
+            <ol id="publisher-list" class="bar-list"></ol>
+            <p id="publisher-empty" class="muted" hidden>No fact-checkers yet.</p>
+          </div>
+        </div>
+        <div class="card table-card">
+          <h3 class="table-title">Websites</h3>
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Website</th>
+                  <th class="num">Checked</th>
+                  <th class="num">Flagged</th>
+                  <th class="num">Flag rate</th>
+                </tr>
+              </thead>
+              <tbody id="site-rows"></tbody>
+            </table>
           </div>
         </div>
       </section>
+
+      <!-- Achievements -->
+      <section
+        id="panel-achievements"
+        role="tabpanel"
+        aria-labelledby="tab-achievements"
+        data-panel="achievements"
+        hidden
+      >
+        <div class="achievements-grid">
+          <div class="card achievements-box">
+            <h2>Your impact</h2>
+            <p class="score"><strong id="score">0</strong><span>points</span></p>
+            <p class="score-rule">1 point per sentence checked, 5 per claim flagged</p>
+            <dl class="stat-list">
+              <div>
+                <dt>Current badge</dt>
+                <dd id="badge">—</dd>
+              </div>
+              <div>
+                <dt>Sentences checked</dt>
+                <dd id="claims-checked">0</dd>
+              </div>
+              <div>
+                <dt>Longest streak</dt>
+                <dd id="streak">0 days</dd>
+              </div>
+              <div>
+                <dt>Websites checked</dt>
+                <dd id="sites-count">0</dd>
+              </div>
+            </dl>
+            <div class="progress-block">
+              <label id="progress-label" for="badge-progress">Progress to next badge</label>
+              <progress id="badge-progress" max="1" value="0"></progress>
+            </div>
+          </div>
+          <div class="card milestones-box">
+            <h2>Milestones</h2>
+            <ul id="milestone-list" class="milestone-list"></ul>
+          </div>
+        </div>
+        <h2 class="section-title">Badges</h2>
+        <ul id="badge-grid" class="badge-grid"></ul>
+      </section>
+
+      <!-- Fun fact of the day: always visible below every tab -->
+      <aside class="card fun-fact" id="fun-fact" aria-labelledby="fun-fact-title">
+        <div class="fun-fact-head">
+          <h2 id="fun-fact-title">Fun fact of the day</h2>
+          <span class="topic" id="fun-fact-topic"></span>
+        </div>
+        <p class="myth" id="fun-fact-myth" hidden>
+          <span class="myth-label">Myth:</span> <s id="fun-fact-myth-text"></s>
+        </p>
+        <p class="fact" id="fun-fact-text"></p>
+        <div class="fun-fact-foot">
+          <span class="muted" id="fun-fact-count"></span>
+          <button class="link-button" type="button" id="fun-fact-next">Show another fact</button>
+        </div>
+      </aside>
     </main>
   </body>
 </html>
