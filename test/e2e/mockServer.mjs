@@ -20,6 +20,22 @@ const KNOWN_MYTHS = {
   mars: [{ publisher: 'PolitiFact', rating: 'Pants on Fire' }],
   'covid-19 was a hoax': [{ publisher: 'AFP Fact Check', rating: 'False' }],
   '5g technology causes cancer': [{ publisher: 'Full Fact', rating: 'False' }],
+  // Claims on fake-news.html
+  '5g networks spread covid': [{ publisher: 'Reuters Fact Check', rating: 'False' }],
+  '5g towers spread the coronavirus': [{ publisher: 'Full Fact', rating: 'False' }],
+  microchips: [{ publisher: 'AP Fact Check', rating: 'False' }],
+  'faked in a studio': [{ publisher: 'Snopes', rating: 'False' }],
+  'climate change is a hoax': [{ publisher: 'Climate Feedback', rating: 'Incorrect' }],
+  'great wall of china is visible': [{ publisher: 'Snopes', rating: 'False' }],
+  '10 percent of their brains': [{ publisher: 'Science Feedback', rating: 'False' }],
+  'drinking bleach': [{ publisher: 'AFP Fact Check', rating: 'False' }],
+  'obama was not born': [{ publisher: 'PolitiFact', rating: 'Pants on Fire' }],
+  chemtrails: [{ publisher: 'USA Today Fact Check', rating: 'False' }],
+  'election was stolen': [{ publisher: 'FactCheck.org', rating: 'False' }],
+  'carrots dramatically improves': [{ publisher: 'Snopes', rating: 'Mostly False' }],
+  'cracking your knuckles causes arthritis': [{ publisher: 'Health Feedback', rating: 'False' }],
+  'lightning never strikes the same place twice.': [{ publisher: 'Snopes', rating: 'False' }],
+  'wind turbines cause cancer': [{ publisher: 'PolitiFact', rating: 'Pants on Fire' }],
   // A hostile publisher name: must render as text, never as HTML.
   'world ends by 2027': [{ publisher: '<img src=x onerror="window.__pwned=1">', rating: 'False' }],
 };
@@ -65,6 +81,10 @@ const server = createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, '127.0.0.1', () =>
-  console.log(`Mock fact-check API on http://127.0.0.1:${PORT}`),
-);
+server.listen(PORT, '127.0.0.1', () => {
+  console.log(`Fixture pages and mock Fact Check API on http://127.0.0.1:${PORT}`);
+  console.log(`  Fake news page:  http://127.0.0.1:${PORT}/fake-news.html`);
+  console.log(`  News article:    http://127.0.0.1:${PORT}/article.html`);
+  console.log(`  Short test page: http://127.0.0.1:${PORT}/test-article.html`);
+  console.log('Press Ctrl+C to stop.');
+});

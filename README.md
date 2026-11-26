@@ -18,17 +18,18 @@ The key and your statistics are stored only in `chrome.storage.local` in your br
 
 Requires Node 20+.
 
-| Command            | What it does                                                  |
-| ------------------ | ------------------------------------------------------------- |
-| `npm run build`    | Bundle `src/` into `dist/` (esbuild)                          |
-| `npm run watch`    | Rebuild JS on change                                          |
-| `npm test`         | Unit tests (Vitest + jsdom)                                   |
-| `npm run test:e2e` | Loads the real extension in Chromium against a local mock API |
-| `npm run lint`     | ESLint                                                        |
-| `npm run format`   | Prettier                                                      |
-| `npm run clones`   | Code-clone detection (jscpd); CI fails on any clone           |
-| `npm run check`    | Everything CI runs except e2e                                 |
-| `npm run package`  | Build and zip into `release/` for the Chrome Web Store        |
+| Command            | What it does                                                           |
+| ------------------ | ---------------------------------------------------------------------- |
+| `npm run build`    | Bundle `src/` into `dist/` (esbuild)                                   |
+| `npm run watch`    | Rebuild JS on change                                                   |
+| `npm run demo`     | Serve the test pages (incl. `fake-news.html`) on http://127.0.0.1:4599 |
+| `npm test`         | Unit tests (Vitest + jsdom)                                            |
+| `npm run test:e2e` | Loads the real extension in Chromium against a local mock API          |
+| `npm run lint`     | ESLint                                                                 |
+| `npm run format`   | Prettier                                                               |
+| `npm run clones`   | Code-clone detection (jscpd); CI fails on any clone                    |
+| `npm run check`    | Everything CI runs except e2e                                          |
+| `npm run package`  | Build and zip into `release/` for the Chrome Web Store                 |
 
 The e2e tests need no API key and no internet: `test/e2e/mockServer.mjs` serves the fixture
 articles and imitates the Fact Check API. Set `SCREENSHOT_DIR=/some/dir` to save screenshots, or

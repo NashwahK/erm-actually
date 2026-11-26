@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Daily Erm — Your Source for Questionable News</title>
+  <!--
+    FICTIONAL TEST PAGE for the Erm... Actually! fact-checker.
+    The outlet, reporters and people quoted are invented. The headline claims are well-known
+    pieces of misinformation that professional fact-checkers have already reviewed, mixed with
+    true sentences, so the extension has something to flag and something to leave alone.
+  -->
+  <style>
+    :root {
+      --ink: #16181d;
+      --muted: #5b6270;
+      --rule: #d9dce1;
+      --paper: #ffffff;
+      --bg: #eef0f3;
+      --brand: #8b1e2d;
+      --brand-dark: #5f1420;
+      --breaking: #d4a017;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.65 Georgia, 'Times New Roman', serif; }
+    a { color: inherit; }
+
+    .test-banner { background: #1f2937; color: #f9fafb; font: 13px/1.4 system-ui, sans-serif; text-align: center; padding: 6px 16px; }
+    .test-banner strong { color: #fde68a; }
+
+    .masthead { background: var(--paper); border-bottom: 4px double var(--rule); }
+    .masthead-inner { max-width: 1120px; margin: 0 auto; padding: 18px 16px 10px; display: grid; gap: 6px; text-align: center; }
+    .dateline { font: 12px system-ui, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+    .logo { font: 700 clamp(2.2rem, 6vw, 3.6rem)/1 'Times New Roman', Georgia, serif; letter-spacing: -0.01em; color: var(--brand); margin: 0; }
+    .tagline { font-style: italic; color: var(--muted); font-size: 0.95rem; }
+
+    nav { background: var(--brand); }
+    nav ul { list-style: none; margin: 0 auto; padding: 0 16px; max-width: 1120px; display: flex; flex-wrap: wrap; gap: 4px 22px; }
+    nav a { display: block; padding: 10px 0; color: #fff; font: 600 13px system-ui, sans-serif; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; }
+    nav a:hover { text-decoration: underline; }
+
+    .ticker { background: var(--paper); border-bottom: 1px solid var(--rule); }
+    .ticker-inner { max-width: 1120px; margin: 0 auto; padding: 8px 16px; display: flex; gap: 12px; align-items: baseline; font: 14px system-ui, sans-serif; }
+    .ticker .label { background: var(--breaking); color: #1b1b1b; font-weight: 800; font-size: 11px; letter-spacing: 0.1em; padding: 3px 8px; border-radius: 2px; white-space: nowrap; }
+
+    .layout { max-width: 1120px; margin: 24px auto 48px; padding: 0 16px; display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 28px; }
+    @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
+
+    article.lead, .card { background: var(--paper); border: 1px solid var(--rule); }
+    article.lead { padding: 28px clamp(18px, 4vw, 40px) 36px; }
+    .kicker { font: 700 12px system-ui, sans-serif; letter-spacing: 0.1em; text-transform: uppercase; color: var(--brand); }
+    h1.headline { font: 700 clamp(1.9rem, 4.5vw, 2.8rem)/1.12 'Times New Roman', Georgia, serif; margin: 8px 0 12px; }
+    .standfirst { font-size: 1.2rem; color: var(--muted); font-style: italic; margin: 0 0 16px; }
+    .byline { font: 13px system-ui, sans-serif; color: var(--muted); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding: 8px 0; margin-bottom: 22px; display: flex; flex-wrap: wrap; gap: 4px 16px; }
+    .byline strong { color: var(--ink); }
+
+    .hero-art { margin: 0 0 22px; }
+    .hero-art svg { width: 100%; height: auto; display: block; border: 1px solid var(--rule); }
+    .hero-art figcaption { font: 13px system-ui, sans-serif; color: var(--muted); margin-top: 6px; }
+
+    article.lead p { margin: 0 0 1.1em; }
+    article.lead h2 { font: 700 1.35rem 'Times New Roman', Georgia, serif; margin: 1.6em 0 0.5em; }
+    blockquote { margin: 1.4em 0; padding: 4px 0 4px 20px; border-left: 4px solid var(--brand); font-size: 1.15rem; font-style: italic; }
+    blockquote cite { display: block; font: normal 13px system-ui, sans-serif; color: var(--muted); margin-top: 6px; }
+
+    aside { display: grid; gap: 20px; align-content: start; }
+    .card { padding: 18px 20px; }
+    .card h3 { font: 800 12px system-ui, sans-serif; letter-spacing: 0.12em; text-transform: uppercase; color: var(--brand); margin: 0 0 12px; border-bottom: 2px solid var(--brand); padding-bottom: 6px; }
+    .trending { list-style: none; margin: 0; padding: 0; counter-reset: trend; display: grid; gap: 14px; }
+    .trending li { counter-increment: trend; display: grid; grid-template-columns: 28px 1fr; gap: 8px; font-size: 0.98rem; line-height: 1.4; }
+    .trending li::before { content: counter(trend); font: 700 1.4rem 'Times New Roman', serif; color: var(--rule); }
+    .opinion p { margin: 0 0 0.8em; font-size: 0.98rem; }
+    .opinion .author { font: 600 13px system-ui, sans-serif; color: var(--muted); }
+
+    .more { max-width: 1120px; margin: 0 auto 48px; padding: 0 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+    .more .card h4 { font: 700 1.15rem/1.25 'Times New Roman', Georgia, serif; margin: 6px 0 8px; }
+    .more .card p { margin: 0; font-size: 0.95rem; color: #2d3139; }
+
+    footer { background: var(--brand-dark); color: #f3e8ea; font: 13px/1.6 system-ui, sans-serif; }
+    footer div { max-width: 1120px; margin: 0 auto; padding: 22px 16px; }
+  </style>
+</head>
+<body>
+  <div class="test-banner"><strong>Test page:</strong> The Daily Erm is fictional. Its stories mix real, debunked misinformation with true statements for testing the Erm... Actually! fact-checker.</div>
+
+  <header class="masthead">
+    <div class="masthead-inner">
+      <span class="dateline">Thursday, November 26, 2026 · Late Edition</span>
+      <p class="logo">The Daily Erm</p>
+      <span class="tagline">“All the news that fits, whether or not it’s true”</span>
+    </div>
+  </header>
+
+  <nav aria-label="Sections">
+    <ul>
+      <li><a href="#">World</a></li>
+      <li><a href="#">Health</a></li>
+      <li><a href="#">Science</a></li>
+      <li><a href="#">Technology</a></li>
+      <li><a href="#">Climate</a></li>
+      <li><a href="#">Opinion</a></li>
+    </ul>
+  </nav>
+
+  <div class="ticker">
+    <div class="ticker-inner">
+      <span class="label">Breaking</span>
+      <span>5G towers spread the coronavirus, say residents demanding the masts be torn down.</span>
+    </div>
+  </div>
+
+  <div class="layout">
+    <main>
+      <article class="lead">
+        <span class="kicker">Health · Exclusive</span>
+        <h1 class="headline">“They Never Told Us”: Readers Uncover the Truth Behind Vaccines, 5G and the Moon</h1>
+        <p class="standfirst">A Daily Erm investigation into the stories the mainstream media won’t touch.</p>
+        <div class="byline">
+          <span>By <strong>Morgan Tate</strong>, Senior Investigations Correspondent</span>
+          <span>Updated 6:42 a.m.</span>
+          <span>8 min read</span>
+        </div>
+
+        <figure class="hero-art">
+          <svg viewBox="0 0 800 300" role="img" aria-label="Illustration of a radio mast beside a crescent moon">
+            <rect width="800" height="300" fill="#1b2a41" />
+            <circle cx="640" cy="90" r="46" fill="#f4e7b5" />
+            <circle cx="660" cy="78" r="44" fill="#1b2a41" />
+            <g fill="#f4e7b5" opacity="0.7">
+              <circle cx="90" cy="60" r="2" /><circle cx="210" cy="40" r="1.5" /><circle cx="330" cy="80" r="2" />
+              <circle cx="470" cy="35" r="1.5" /><circle cx="540" cy="140" r="1.5" /><circle cx="730" cy="190" r="2" />
+            </g>
+            <rect y="240" width="800" height="60" fill="#0f1a2b" />
+            <g stroke="#c9ced6" stroke-width="5" fill="none">
+              <path d="M330 240 L380 70 L430 240" />
+              <path d="M345 190 L415 190 M355 150 L405 150 M366 110 L394 110" />
+            </g>
+            <g stroke="#d4a017" stroke-width="3" fill="none" opacity="0.85">
+              <path d="M410 60 q20 10 0 20" /><path d="M420 50 q35 20 0 40" /><path d="M350 60 q-20 10 0 20" /><path d="M340 50 q-35 20 0 40" />
+            </g>
+          </svg>
+          <figcaption>Illustration: a phone mast on the edge of Millbrook, where residents gathered on Tuesday.</figcaption>
+        </figure>
+
+        <p>Residents of the town of Millbrook packed the community hall on Tuesday night to share what they say the authorities have kept hidden for years. The meeting ran for more than three hours. Organisers said over four hundred people attended.</p>
+
+        <p>The first speaker, a retired engineer, told the crowd that 5G networks spread COVID-19. He argued that the timing of the rollout and the pandemic could not be a coincidence. Several people in the audience nodded in agreement.</p>
+
+        <p>Others took aim at the vaccination programme. Vaccines cause autism, one parent insisted, pointing to a study she had read online. Another speaker claimed that COVID-19 vaccines contain microchips used to track people.</p>
+
+        <blockquote>
+          “Once you start asking questions, you realise how much they have lied to us. The moon landing was faked in a studio.”
+          <cite>— Dana Whitfield, local meeting organiser</cite>
+        </blockquote>
+
+        <h2>“Science is settled,” say experts — but readers disagree</h2>
+
+        <p>The Earth orbits the Sun once every 365.25 days. Water boils at 100 degrees Celsius at sea level. These facts were not disputed at the meeting.</p>
+
+        <p>But climate change is a hoax, according to a pamphlet handed out at the door. The same pamphlet stated that the Great Wall of China is visible from space with the naked eye. It also claimed that humans only use 10 percent of their brains.</p>
+
+        <p>When asked for comment, a spokesperson for the regional health authority said the agency follows the evidence. The authority recommends that residents speak to their doctor before making decisions about their health.</p>
+
+        <p>Organisers say they will hold a second meeting next month. Drinking bleach cures COVID-19, one attendee shouted as the hall emptied.</p>
+      </article>
+    </main>
+
+    <aside>
+      <section class="card">
+        <h3>Trending</h3>
+        <ol class="trending">
+          <li>Barack Obama was not born in the United States, new documents claim.</li>
+          <li>Eating carrots dramatically improves your night vision.</li>
+          <li>The Eiffel Tower is located in Paris.</li>
+          <li>Mount Everest is the highest mountain above sea level on Earth.</li>
+          <li>Chemtrails from airplanes are being used to control the weather.</li>
+        </ol>
+      </section>
+
+      <section class="card opinion">
+        <h3>Opinion</h3>
+        <p>The 2020 United States presidential election was stolen through widespread voter fraud. It is time someone said it plainly.</p>
+        <p class="author">— Rowan Hale, contributing columnist</p>
+      </section>
+    </aside>
+  </div>
+
+  <section class="more" aria-label="More stories">
+    <div class="card">
+      <span class="kicker">Science</span>
+      <h4>Lightning never strikes the same place twice, scientists confirm</h4>
+      <p>Lightning never strikes the same place twice. Meteorologists at the fictional Hollin Institute say the old saying holds up.</p>
+    </div>
+    <div class="card">
+      <span class="kicker">Health</span>
+      <h4>Cracking your knuckles causes arthritis, doctors warn</h4>
+      <p>Cracking your knuckles causes arthritis. Readers are urged to stop immediately.</p>
+    </div>
+    <div class="card">
+      <span class="kicker">Technology</span>
+      <h4>Your phone is listening to every conversation</h4>
+      <p>Wind turbines cause cancer in people who live nearby. Experts are said to be baffled by the findings.</p>
+    </div>
+  </section>
+
+  <footer>
+    <div>© 2026 The Daily Erm. A fictional publication created for testing the Erm... Actually! browser extension. No real outlet, reporter or person quoted on this page exists.</div>
+  </footer>
+</body>
+</html>
