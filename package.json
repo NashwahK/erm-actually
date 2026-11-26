@@ -1,0 +1,38 @@
+{
+  "name": "erm-actually",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Erm... Actually! — a browser extension that highlights fact-checked claims on any page.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:test": "node scripts/build.mjs --test",
+    "watch": "node scripts/build.mjs --watch",
+    "package": "node scripts/build.mjs && node scripts/package.mjs",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "clones": "jscpd src",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "npm run build:test && playwright test",
+    "check": "npm run lint && npm run format:check && npm run clones && npm test && npm run build"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.63.0",
+    "esbuild": "0.28.2",
+    "eslint": "10.15.0",
+    "globals": "17.14.0",
+    "jscpd": "5.4.3",
+    "jsdom": "31.0.1",
+    "prettier": "3.10.1",
+    "vitest": "5.1.2"
+  },
+  "dependencies": {
+    "chart.js": "4.6.2"
+  }
+}

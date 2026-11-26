@@ -1,0 +1,9 @@
+dist/
+dist-test/
+release/
+report/
+coverage/
+test-results/
+playwright-report/
+package-lock.json
+test/fixtures/

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Erm... Actually!</title>
+    <link rel="stylesheet" href="../theme.css" />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main class="card popup">
+      <h1>Erm... Actually!</h1>
+      <dl class="stats">
+        <dt>Claims checked</dt>
+        <dd id="claims-count">0</dd>
+        <dt>Claims flagged</dt>
+        <dd id="flagged-count">0</dd>
+      </dl>
+      <button id="check-claims-btn" class="btn" type="button">Check claims on this page</button>
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+      <button id="dashboard-btn" class="btn btn-secondary" type="button">Open dashboard</button>
+      <button id="settings-btn" class="link-button settings" type="button">Settings</button>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>

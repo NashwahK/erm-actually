@@ -1,0 +1,102 @@
+/* Design tokens shared by popup, dashboard and options. Dark mode follows the OS setting;
+   v1 had ~80 lines of `body.dark-theme` overrides that were never switched on. */
+:root {
+  color-scheme: light dark;
+  --accent: #ffc107;
+  --accent-hover: #ffd54f;
+  --secondary: #00838f;
+  --secondary-hover: #00acc1;
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --surface-inverse: #1f2937;
+  --text: #1f2937;
+  --text-muted: #4b5563;
+  --text-inverse: #f8fafc;
+  --border: #e5e7eb;
+  --danger: #b91c1c;
+  --radius: 8px;
+  --shadow: 0 2px 4px rgb(0 0 0 / 6%);
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111827;
+    --surface: #1f2937;
+    --surface-inverse: #f8fafc;
+    --text: #f3f4f6;
+    --text-muted: #cbd5e1;
+    --text-inverse: #111827;
+    --border: #374151;
+    --danger: #fca5a5;
+    --shadow: 0 2px 4px rgb(0 0 0 / 30%);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+}
+
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border-left: 5px solid var(--accent);
+}
+
+.btn {
+  display: inline-block;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #1f2937;
+  font: 600 0.9rem var(--font);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.btn-secondary {
+  background: var(--secondary);
+  color: #fff;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--secondary-hover);
+}
+
+.link-button {
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--secondary);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.status-error {
+  color: var(--danger);
+}
+
+:focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 2px;
+}
