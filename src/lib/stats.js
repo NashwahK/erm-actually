@@ -75,34 +75,47 @@ export function badgeProgress(score) {
   return { current, next, progress };
 }
 
+const flaggedIn = (stats, date) => stats.byMonth[monthKey(date)]?.flagged ?? 0;
+
+/** Labels and flagged counts for the last `months` calendar months, oldest first. */
+export function monthlySeries(stats, now, months) {
+  const dates = Array.from(
+    { length: months },
+    (_, i) => new Date(now.getFullYear(), now.getMonth() - (months - 1 - i), 1),
+  );
+  return {
+    monthLabels: dates.map((d) => d.toLocaleString('en', { month: 'short' })),
+    monthlyFlagged: dates.map((d) => flaggedIn(stats, d)),
+  };
+}
+
+/** The sites with the most flagged claims, most first. */
+export function topSites(stats, limit = 5) {
+  const sites = Object.entries(stats.bySite)
+    .filter(([, v]) => v.flagged > 0)
+    .sort((a, b) => b[1].flagged - a[1].flagged)
+    .slice(0, limit);
+  return {
+    siteLabels: sites.map(([site]) => site),
+    siteFlagged: sites.map(([, v]) => v.flagged),
+  };
+}
+
 /** Everything the dashboard renders, derived from stats. */
 export function buildDashboardModel(stats, now = new Date(), months = 6) {
   const s = { ...EMPTY_STATS, ...stats };
-  const monthLabels = [];
-  const monthlyFlagged = [];
-  for (let i = months - 1; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    monthLabels.push(d.toLocaleString('en', { month: 'short' }));
-    monthlyFlagged.push(s.byMonth[monthKey(d)]?.flagged ?? 0);
-  }
-  const sites = Object.entries(s.bySite)
-    .filter(([, v]) => v.flagged > 0)
-    .sort((a, b) => b[1].flagged - a[1].flagged)
-    .slice(0, 5);
+  const sites = topSites(s);
   const score = scoreOf(s);
-
   return {
     isEmpty: s.pagesScanned === 0,
-    flaggedThisMonth: s.byMonth[monthKey(now)]?.flagged ?? 0,
+    flaggedThisMonth: flaggedIn(s, now),
     flagRate: s.totalChecked ? s.totalFlagged / s.totalChecked : 0,
-    topSite: sites[0]?.[0] ?? null,
+    topSite: sites.siteLabels[0] ?? null,
     pagesScanned: s.pagesScanned,
     totalChecked: s.totalChecked,
     totalFlagged: s.totalFlagged,
-    monthLabels,
-    monthlyFlagged,
-    siteLabels: sites.map(([site]) => site),
-    siteFlagged: sites.map(([, v]) => v.flagged),
+    ...monthlySeries(s, now, months),
+    ...sites,
     score,
     longestStreak: longestStreak(s.scanDays),
     ...badgeProgress(score),

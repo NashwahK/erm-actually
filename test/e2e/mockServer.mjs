@@ -6,6 +6,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const PORT = 4599;
+// Optional delay for API answers, to imitate a real network (e.g. MOCK_LATENCY_MS=150).
+const LATENCY_MS = Number(process.env.MOCK_LATENCY_MS ?? 0);
 const fixtures = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../fixtures');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.jpg': 'image/jpeg', '.png': 'image/png' };
 
@@ -61,6 +63,7 @@ const server = createServer(async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
 
   if (url.pathname === '/v1alpha1/claims:search') {
+    if (LATENCY_MS) await new Promise((resolve) => setTimeout(resolve, LATENCY_MS));
     if (url.searchParams.get('key') !== 'test-key') {
       res.writeHead(403, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ error: { message: 'API key not valid' } }));
